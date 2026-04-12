@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface text-text;
+  }
+
+  * {
+    @apply border-steel-200;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  }
+
+  .gradient-warm {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  }
+}
