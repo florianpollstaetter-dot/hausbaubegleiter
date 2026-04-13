@@ -4,36 +4,22 @@ export interface Kategorie {
   description: string;
 }
 
-export const KATEGORIEN: Record<string, Kategorie[]> = {
-  "Rohbau & Struktur": [
-    { value: "fundament", label: "Fundament & Bodenplatte", description: "Aushub, Bewehrung, Betonieren" },
-    { value: "mauerwerk", label: "Mauerwerk & Wände", description: "Ziegel, Porenbeton, Kalksandstein" },
-    { value: "dach", label: "Dacharbeiten", description: "Dachstuhl, Eindeckung, Dämmung" },
-    { value: "beton", label: "Beton & Estrich", description: "Mischverhältnisse, Trocknung, Risse" },
-  ],
-  "Innenausbau": [
-    { value: "trockenbau", label: "Trockenbau", description: "Rigips, Ständerwerk, Abhangdecken" },
-    { value: "fliesen", label: "Fliesen & Boden", description: "Verlegen, Verfugen, Materialwahl" },
-    { value: "tueren_fenster", label: "Türen & Fenster", description: "Einbau, Austausch, Dichtung" },
-    { value: "malern", label: "Malern & Tapezieren", description: "Grundierung, Techniken, Materialien" },
-  ],
-  "Haustechnik": [
-    { value: "sanitaer", label: "Sanitär & Bad", description: "Rohre, Armaturen, Badplanung" },
-    { value: "heizung", label: "Heizung & Klima", description: "Wärmepumpe, Fußbodenheizung, Heizkörper" },
-    { value: "elektro", label: "Elektro", description: "Leitungen, Steckdosen, Sicherungen" },
-  ],
-  "Außenbereich": [
-    { value: "garten", label: "Garten & Terrasse", description: "Pflaster, Holzterrasse, Bepflanzung" },
-    { value: "fassade", label: "Fassade & Außenwand", description: "WDVS, Putz, Verkleidung" },
-    { value: "garage", label: "Garage & Carport", description: "Planung, Bau, Genehmigung" },
-  ],
-  "Renovierung": [
-    { value: "sanierung", label: "Altbausanierung", description: "Entkernen, Aufwertung, Substanzerhalt" },
-    { value: "daemmung", label: "Dämmung & Energie", description: "Wärmedämmung, KfW, Fördermittel" },
-    { value: "schimmel", label: "Feuchte & Schimmel", description: "Ursachen, Beseitigung, Prävention" },
-  ],
-};
+export const KATEGORIEN: Kategorie[] = [
+  { value: "hausbau", label: "Hausbau / Neubau", description: "Kompletter Hausbau von Fundament bis Dach — Planung, Ablauf, Kosten" },
+  { value: "wohnungsbau", label: "Wohnungsbau / Umbau", description: "Wohnung ausbauen, umbauen oder neu gestalten" },
+  { value: "haussanierung", label: "Haussanierung", description: "Altbau sanieren, modernisieren, energetisch aufwerten" },
+  { value: "wohnungssanierung", label: "Wohnungssanierung", description: "Wohnung renovieren, Badsanierung, Kuechensanierung" },
+  { value: "gartengestaltung", label: "Gartengestaltung", description: "Gartenplanung, Terrasse, Wege, Bepflanzung, Zaun, Pool" },
+  { value: "innenausbau", label: "Innenausbau", description: "Trockenbau, Boden, Fliesen, Tueren, Fenster, Malern" },
+  { value: "dach_fassade", label: "Dach & Fassade", description: "Dachsanierung, Eindeckung, Fassadendaemmung, Putz" },
+  { value: "sanitaer_bad", label: "Sanitaer & Bad", description: "Badplanung, Rohre, Armaturen, Dusche, WC" },
+  { value: "heizung_energie", label: "Heizung & Energie", description: "Waermepumpe, Fussbodenheizung, Solar, Daemmung" },
+  { value: "elektro", label: "Elektro & Smart Home", description: "Leitungen, Steckdosen, Beleuchtung, Smarthome" },
+  { value: "garage_carport", label: "Garage & Carport", description: "Garage bauen, Carport, Stellplatz, Genehmigung" },
+  { value: "keller", label: "Keller & Fundament", description: "Kellerausbau, Abdichtung, Fundament, Drainage" },
+];
 
-export const FLAT_KATEGORIEN: Record<string, string> = Object.values(KATEGORIEN)
-  .flat()
-  .reduce((acc, k) => ({ ...acc, [k.value]: k.label }), {} as Record<string, string>);
+export const FLAT_KATEGORIEN: Record<string, string> = KATEGORIEN.reduce(
+  (acc, k) => ({ ...acc, [k.value]: k.label }),
+  {} as Record<string, string>
+);

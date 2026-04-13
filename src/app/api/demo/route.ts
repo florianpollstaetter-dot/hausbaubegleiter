@@ -1,71 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const RATE_WINDOW_MS = 24 * 60 * 60 * 1000;
+// Free trial: 1 free consultation per IP, then permanent paywall
+const trialUsedMap = new Map<string, boolean>();
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT) return false;
-  entry.count++;
+function checkFreeTrial(ip: string): boolean {
+  if (trialUsedMap.get(ip)) return false;
+  trialUsedMap.set(ip, true);
   return true;
 }
 
 const KATEGORIEN: Record<string, string> = {
-  mauerwerk: "Mauerwerk und Wände (Ziegel, Porenbeton, Kalksandstein)",
-  dach: "Dacharbeiten (Dachstuhl, Eindeckung, Dämmung)",
-  fliesen: "Fliesen und Bodenbeläge (Verlegen, Verfugen, Materialwahl)",
-  sanitaer: "Sanitär und Badplanung (Rohre, Armaturen, Badgestaltung)",
-  garten: "Garten und Terrasse (Pflaster, Holzterrasse, Bepflanzung)",
-  garage: "Garage und Carport (Planung, Bau, Genehmigung)",
-  daemmung: "Dämmung und Energieeffizienz (Wärmedämmung, KfW-Förderung)",
-  trockenbau: "Trockenbau (Rigips, Ständerwerk, Abhangdecken)",
-  fundament: "Fundament und Bodenplatte (Aushub, Bewehrung, Betonieren)",
-  beton: "Beton und Estrich (Mischverhältnisse, Trocknung, Risse)",
-  tueren_fenster: "Türen und Fenster (Einbau, Austausch, Dichtung)",
-  malern: "Malern und Tapezieren (Grundierung, Techniken, Materialien)",
-  heizung: "Heizung und Klima (Wärmepumpe, Fußbodenheizung, Heizkörper)",
-  elektro: "Elektroinstallation (Leitungen, Steckdosen, Sicherungen)",
-  fassade: "Fassade und Außenwand (WDVS, Putz, Verkleidung)",
-  sanierung: "Altbausanierung (Entkernen, Aufwertung, Substanzerhalt)",
-  schimmel: "Feuchte und Schimmel (Ursachen, Beseitigung, Prävention)",
+  hausbau: "Kompletter Hausbau / Neubau (Planung, Ablauf, Kosten)",
+  wohnungsbau: "Wohnungsbau / Wohnungsumbau",
+  haussanierung: "Haussanierung (Altbau modernisieren, energetisch aufwerten)",
+  wohnungssanierung: "Wohnungssanierung (Badsanierung, Kuechensanierung, Renovierung)",
+  gartengestaltung: "Gartengestaltung (Gartenplanung, Terrasse, Wege, Bepflanzung, Zaun, Pool)",
+  innenausbau: "Innenausbau (Trockenbau, Boden, Fliesen, Tueren, Fenster, Malern)",
+  dach_fassade: "Dach und Fassade (Dachsanierung, Eindeckung, Fassadendaemmung, Putz)",
+  sanitaer_bad: "Sanitaer und Bad (Badplanung, Rohre, Armaturen, Dusche, WC)",
+  heizung_energie: "Heizung und Energie (Waermepumpe, Fussbodenheizung, Solar, Daemmung)",
+  elektro: "Elektro und Smart Home (Leitungen, Steckdosen, Beleuchtung, Smarthome)",
+  garage_carport: "Garage und Carport (Planung, Bau, Genehmigung)",
+  keller: "Keller und Fundament (Kellerausbau, Abdichtung, Drainage)",
 };
 
-function buildSystemPrompt(kategorie: string, flaeche?: number, question?: string): string {
+function buildSystemPrompt(kategorie: string, question: string): string {
   const kategorieLabel = KATEGORIEN[kategorie] ?? kategorie;
 
-  const flaecheContext = flaeche
-    ? `\n- Fläche/Umfang: ca. ${flaeche} m²`
-    : "";
-  const questionContext = question
-    ? `\n- Konkrete Frage: "${question}"`
-    : "";
+  return `Du bist Hausbaubegleiter — ein erfahrener Bauberater fuer Heimwerker und Hausbauer im deutschsprachigen Raum. Du gibst praxisnahe, direkt umsetzbare Empfehlungen basierend auf jahrzehntelanger Handwerks- und Bauerfahrung.
 
-  return `Du bist Hausbaubegleiter — ein erfahrener Bauberater für Heimwerker und Hausbauer im deutschsprachigen Raum. Du gibst praxisnahe, direkt umsetzbare Empfehlungen basierend auf jahrzehntelanger Handwerks- und Bauerfahrung.
+Dein Stil: Direkt, sachlich, kompetent. Du-Form. Kurze Saetze. Keine Floskeln. Konkrete Zahlen und Mengen. Trockener Handwerker-Humor ist erlaubt. Erwaehne niemals KI, AI oder kuenstliche Intelligenz.
 
-Dein Stil: Direkt, sachlich, kompetent. Du-Form. Kurze Sätze. Keine Floskeln. Konkrete Zahlen und Mengen. Trockener Handwerker-Humor ist erlaubt.
+Kontext:
+- Kategorie: ${kategorieLabel}
+- Konkrete Frage: "${question}"
 
-Aktueller Kontext:
-- Kategorie: ${kategorieLabel}${flaecheContext}${questionContext}
+WICHTIG: Beantworte die konkrete Frage direkt und spezifisch. Gib keine allgemeinen Ratschlaege.
 
-Strukturiere deine Antwort in genau diese Abschnitte mit Markdown-Überschriften (###):
+Strukturiere deine Antwort in genau diese Abschnitte mit Markdown-Ueberschriften (###):
 
-### Überblick
-Kurze Einschätzung: Schwierigkeitsgrad (1-5), geschätzter Zeitaufwand, ob ein Profi nötig ist.
+### Ueberblick
+Kurze Einschaetzung: Schwierigkeitsgrad (1-5), geschaetzter Zeitaufwand, ob ein Profi noetig ist.
 
 ### Materialliste
-Konkrete Materialien mit geschätzten Mengen. Bei Flächenangabe: berechne die Mengen.
+Konkrete Materialien mit geschaetzten Mengen. Bei Flaechenangabe: berechne die Mengen.
 
-### Geschätzte Kosten
-Realistischer Preisrahmen für den DACH-Raum (Material + ggf. Handwerker). Gib eine Spanne an.
+### Geschaetzte Kosten
+Realistischer Preisrahmen fuer den DACH-Raum (Material + ggf. Handwerker). Gib eine Spanne an.
 
-### Schritt für Schritt
+### Schritt fuer Schritt
 Praktische Anleitung in nummerierten Schritten. Max 6 Schritte.
 
 ### Profi-Tipp
@@ -74,9 +58,9 @@ Ein konkreter Tipp, den nur erfahrene Handwerker kennen.
 ### Sicherheitshinweis
 (Nur wenn relevant) Was beachtet werden muss. Bei Elektro, Gas, Statik: immer den Hinweis auf Fachmann geben.
 
-WICHTIG: Keine statischen Berechnungen. Bei tragenden Konstruktionen, Elektrik und Gas immer auf Fachmann verweisen. Preise sind Richtwerte — keine Garantie.
+WICHTIG: Keine statischen Berechnungen. Bei tragenden Konstruktionen, Elektrik und Gas immer auf Fachmann verweisen. Preise sind Richtwerte.
 
-Schreib auf Deutsch. Max 500 Wörter.`;
+Schreib auf Deutsch. Max 500 Woerter.`;
 }
 
 export async function POST(request: NextRequest) {
@@ -85,24 +69,24 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  if (!checkRateLimit(ip)) {
+  if (!checkFreeTrial(ip)) {
     return NextResponse.json(
       {
-        error:
-          "Tageslimit erreicht. Du hast heute bereits 3 kostenlose Beratungen erhalten. Registrier dich fuer unbegrenzte Nutzung.",
+        error: "trial_expired",
+        message: "Du hast deine kostenlose Beratung bereits erhalten. Waehle einen Plan fuer unbegrenzten Zugang.",
       },
       { status: 429 }
     );
   }
 
-  let body: { kategorie?: string; flaeche?: number; question?: string };
+  let body: { kategorie?: string; question?: string };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Ungueltige Anfrage." }, { status: 400 });
   }
 
-  const { kategorie, flaeche, question } = body;
+  const { kategorie, question } = body;
 
   if (!kategorie || !KATEGORIEN[kategorie]) {
     return NextResponse.json(
@@ -111,9 +95,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (flaeche !== undefined && (flaeche < 0.1 || flaeche > 10000)) {
+  if (!question?.trim()) {
     return NextResponse.json(
-      { error: "Flaeche muss zwischen 0.1 und 10.000 m² liegen." },
+      { error: "Bitte stelle eine konkrete Frage." },
       { status: 400 }
     );
   }
@@ -130,15 +114,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const kategorieLabel = KATEGORIEN[kategorie];
-    const flaecheText = flaeche ? ` Die Fläche beträgt ca. ${flaeche} m².` : "";
-    const userMessage = question
-      ? `Kategorie: ${kategorieLabel}.${flaecheText} Meine Frage: ${question}`
-      : `Bitte gib mir eine vollständige Bauberatung für: ${kategorieLabel}.${flaecheText}`;
+    const userMessage = `Kategorie: ${kategorieLabel}. Meine Frage: ${question}`;
 
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 1200,
-      system: buildSystemPrompt(kategorie, flaeche, question),
+      system: buildSystemPrompt(kategorie, question!),
       messages: [
         {
           role: "user",

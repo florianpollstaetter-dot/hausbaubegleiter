@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 2;
-const RATE_WINDOW_MS = 24 * 60 * 60 * 1000;
+// Free trial: 1 free photo analysis per IP, then paywall
+const trialUsedMap = new Map<string, boolean>();
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return true;
-  }
-  if (entry.count >= RATE_LIMIT) return false;
-  entry.count++;
+function checkFreeTrial(ip: string): boolean {
+  if (trialUsedMap.get(ip)) return false;
+  trialUsedMap.set(ip, true);
   return true;
 }
 
@@ -25,9 +18,9 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  if (!checkRateLimit(ip)) {
+  if (!checkFreeTrial(ip)) {
     return NextResponse.json(
-      { error: "Tageslimit fuer Foto-Analyse erreicht (2 pro Tag). Registrier dich fuer unbegrenzte Nutzung." },
+      { error: "trial_expired", message: "Du hast deine kostenlose Foto-Analyse bereits erhalten. Waehle einen Plan fuer unbegrenzten Zugang." },
       { status: 429 }
     );
   }

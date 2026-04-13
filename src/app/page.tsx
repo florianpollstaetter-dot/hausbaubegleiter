@@ -1,18 +1,23 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import DemoWidget from "@/components/DemoWidget";
 import PhotoUpload from "@/components/PhotoUpload";
-import { CheckCircle, Hammer, Ruler, Wrench, Home, Zap, TreePine, ArrowRight } from "lucide-react";
+import { CheckCircle, Hammer, Ruler, Wrench, Home, Zap, TreePine, ArrowRight, Star, Award } from "lucide-react";
 
 const KATEGORIEN = [
-  { icon: Hammer, label: "Mauerwerk & Rohbau", color: "text-primary" },
-  { icon: Home, label: "Dach & Fassade", color: "text-steel-600" },
-  { icon: Wrench, label: "Sanitaer & Heizung", color: "text-primary" },
-  { icon: Ruler, label: "Innenausbau", color: "text-steel-600" },
-  { icon: Zap, label: "Elektro & Technik", color: "text-accent" },
-  { icon: TreePine, label: "Garten & Terrasse", color: "text-green-600" },
+  { icon: Home, label: "Hausbau & Neubau", color: "text-primary" },
+  { icon: Wrench, label: "Sanierung & Renovierung", color: "text-steel-600" },
+  { icon: TreePine, label: "Gartengestaltung", color: "text-green-600" },
+  { icon: Ruler, label: "Innenausbau", color: "text-primary" },
+  { icon: Hammer, label: "Dach & Fassade", color: "text-steel-600" },
+  { icon: Zap, label: "Elektro & Heizung", color: "text-accent" },
 ];
 
 export default function HomePage() {
+  const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
+
   return (
     <div className="bg-surface">
       {/* Hero */}
@@ -29,10 +34,9 @@ export default function HomePage() {
           </h1>
 
           <p className="text-base sm:text-lg text-text-light max-w-lg text-balance leading-relaxed">
-            Materialmengen, Kosten, Anleitungen — dein KI-Bauberater fuer jedes Projekt. Foto hochladen, Frage stellen, loslegen.
+            Materialmengen, Kosten, Anleitungen — dein KI-Bauberater fuer jedes Projekt. Frage stellen, Foto hochladen, loslegen.
           </p>
 
-          {/* Demo Widget */}
           <div className="w-full mt-2">
             <DemoWidget />
           </div>
@@ -43,7 +47,7 @@ export default function HomePage() {
       <section className="bg-white py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <p className="text-center text-sm font-semibold text-text-muted uppercase tracking-widest mb-8">
-            Beratung fuer alle Gewerke
+            Beratung fuer alle Projekte
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {KATEGORIEN.map(({ icon: Icon, label, color }) => (
@@ -78,9 +82,9 @@ export default function HomePage() {
           </div>
           <div className="grid sm:grid-cols-3 gap-8">
             {[
-              { step: "1", title: "Projekt beschreiben", desc: "Waehle dein Gewerk, gib die Flaeche an und stell deine Frage. Oder lade einfach ein Foto hoch." },
+              { step: "1", title: "Projekt & Frage", desc: "Waehle dein Projekt, stell deine Frage oder lade ein Foto hoch." },
               { step: "2", title: "Sofort Antwort", desc: "Materialliste, Kostenabschaetzung und Schritt-fuer-Schritt-Anleitung — in Sekunden." },
-              { step: "3", title: "Loslegen", desc: "Bestell das Material, schnapp dir das Werkzeug und leg los. Bei Fragen: frag nochmal." },
+              { step: "3", title: "Loslegen", desc: "Bestell das Material, schnapp dir das Werkzeug und leg los." },
             ].map(({ step, title, desc }) => (
               <div key={step} className="text-center">
                 <div className="w-12 h-12 rounded-xl bg-primary-50 text-primary font-bold text-lg flex items-center justify-center mx-auto mb-4 border border-primary-100">
@@ -96,21 +100,53 @@ export default function HomePage() {
 
       {/* Pricing */}
       <section className="py-20 px-4" id="preise">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-text font-display">Klare Preise</h2>
-            <p className="mt-2 text-text-light text-sm">30 Tage kostenlos testen. Keine Kreditkarte noetig.</p>
+            <p className="mt-2 text-text-light text-sm">Einmal kostenlos testen. Dann den passenden Plan waehlen.</p>
+
+            {/* Billing toggle */}
+            <div className="inline-flex items-center gap-1 bg-steel-100 rounded-xl p-1 mt-6">
+              <button
+                onClick={() => setBilling("monthly")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  billing === "monthly" ? "bg-white text-text shadow-sm" : "text-text-muted hover:text-text"
+                }`}
+              >
+                Monatlich
+              </button>
+              <button
+                onClick={() => setBilling("annual")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  billing === "annual" ? "bg-white text-text shadow-sm" : "text-text-muted hover:text-text"
+                }`}
+              >
+                Jaehrlich <span className="text-green-600 text-xs font-semibold">spare 17%</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-5">
-            {/* Free */}
+          <div className="grid sm:grid-cols-3 gap-5">
+            {/* Basic */}
             <div className="rounded-2xl border border-steel-200 p-6 bg-surface">
-              <h3 className="font-semibold text-text">Kostenlos</h3>
-              <div className="mt-2 text-3xl font-bold text-text">
-                0 &euro;<span className="text-base font-normal text-text-muted">/Monat</span>
+              <div className="flex items-center gap-2 mb-1">
+                <Star className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-text">Basic</h3>
               </div>
+              <div className="mt-2 text-3xl font-bold text-text">
+                {billing === "monthly" ? "12,99" : "10,75"} &euro;
+                <span className="text-base font-normal text-text-muted">/Mo</span>
+              </div>
+              {billing === "annual" && (
+                <p className="text-xs text-green-600 mt-1">129 &euro;/Jahr (statt 155,88 &euro;)</p>
+              )}
               <ul className="mt-5 space-y-2.5">
-                {["3 Bauberatungen pro Tag", "2 Foto-Analysen pro Tag", "Alle Kategorien", "Keine Registrierung"].map((f) => (
+                {[
+                  "Unbegrenzte Bauberatungen",
+                  "Alle 12 Kategorien",
+                  "Materiallisten & Kosten",
+                  "Jederzeit kuendbar",
+                ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm text-text-light">
                     <CheckCircle className="w-4 h-4 text-steel-300 flex-shrink-0" />
                     {f}
@@ -118,26 +154,36 @@ export default function HomePage() {
                 ))}
               </ul>
               <Link
-                href="#"
-                className="mt-6 block w-full text-center border border-steel-200 text-text-light font-medium py-2.5 rounded-xl hover:bg-steel-50 transition-colors text-sm"
+                href="/onboarding?plan=basic"
+                className="mt-6 block w-full text-center border border-primary text-primary font-medium py-2.5 rounded-xl hover:bg-primary-50 transition-colors text-sm"
               >
-                Demo nutzen
+                Basic starten
               </Link>
             </div>
 
             {/* Pro */}
             <div className="rounded-2xl border-2 border-primary p-6 bg-white relative shadow-card">
-              <h3 className="font-semibold text-text">Baubegleiter Pro</h3>
-              <div className="mt-2 text-3xl font-bold text-text">
-                9,99 &euro;<span className="text-base font-normal text-text-muted">/Monat</span>
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full">
+                EMPFOHLEN
+              </span>
+              <div className="flex items-center gap-2 mb-1">
+                <Wrench className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-text">Pro</h3>
               </div>
+              <div className="mt-2 text-3xl font-bold text-text">
+                {billing === "monthly" ? "19,99" : "16,58"} &euro;
+                <span className="text-base font-normal text-text-muted">/Mo</span>
+              </div>
+              {billing === "annual" && (
+                <p className="text-xs text-green-600 mt-1">199 &euro;/Jahr (statt 239,88 &euro;)</p>
+              )}
               <ul className="mt-5 space-y-2.5">
                 {[
-                  "Unbegrenzte Beratungen",
-                  "Unbegrenzte Foto-Analysen",
+                  "Alles aus Basic",
+                  "Foto-Analyse (unbegrenzt)",
                   "Projekte speichern",
                   "Materiallisten exportieren",
-                  "Jederzeit kuendbar",
+                  "Personalisierte Empfehlungen",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm text-text-light">
                     <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
@@ -146,11 +192,46 @@ export default function HomePage() {
                 ))}
               </ul>
               <Link
-                href="/onboarding"
+                href="/onboarding?plan=pro"
                 className="mt-6 flex items-center justify-center gap-2 w-full bg-primary text-white font-semibold py-2.5 rounded-xl hover:bg-primary-600 transition-colors text-sm"
               >
-                Kostenlos starten
+                Pro starten
                 <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Baumeister */}
+            <div className="rounded-2xl border border-steel-200 p-6 bg-surface">
+              <div className="flex items-center gap-2 mb-1">
+                <Award className="w-4 h-4 text-accent" />
+                <h3 className="font-semibold text-text">Baumeister</h3>
+              </div>
+              <div className="mt-2 text-3xl font-bold text-text">
+                {billing === "monthly" ? "29,99" : "24,92"} &euro;
+                <span className="text-base font-normal text-text-muted">/Mo</span>
+              </div>
+              {billing === "annual" && (
+                <p className="text-xs text-green-600 mt-1">299 &euro;/Jahr (statt 359,88 &euro;)</p>
+              )}
+              <ul className="mt-5 space-y-2.5">
+                {[
+                  "Alles aus Pro",
+                  "Mehrere Projekte parallel",
+                  "Bild-Generierung (Designvorschlaege)",
+                  "Prioritaets-Support",
+                  "Fruehzugang zu neuen Features",
+                ].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-text-light">
+                    <CheckCircle className="w-4 h-4 text-accent flex-shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/onboarding?plan=baumeister"
+                className="mt-6 block w-full text-center bg-accent text-white font-semibold py-2.5 rounded-xl hover:bg-accent-600 transition-colors text-sm"
+              >
+                Baumeister starten
               </Link>
             </div>
           </div>
@@ -173,13 +254,13 @@ export default function HomePage() {
             Dein naechstes Projekt wartet
           </h2>
           <p className="mt-3 text-text-light">
-            Starte jetzt kostenlos — kein Abo, kein Risiko.
+            Einmal kostenlos testen — dann den passenden Plan waehlen.
           </p>
           <Link
             href="/onboarding"
             className="mt-8 inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-primary-600 transition-colors"
           >
-            Jetzt kostenlos starten
+            Jetzt kostenlos testen
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -2,23 +2,29 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Wrench } from "lucide-react";
+import { ArrowRight, Wrench, Sparkles } from "lucide-react";
 
 const KATEGORIEN = [
-  { value: "mauerwerk", label: "Mauerwerk & Wände" },
-  { value: "dach", label: "Dacharbeiten" },
-  { value: "fliesen", label: "Fliesen & Boden" },
-  { value: "sanitaer", label: "Sanitär & Bad" },
-  { value: "garten", label: "Garten & Terrasse" },
-  { value: "garage", label: "Garage & Carport" },
-  { value: "daemmung", label: "Dämmung & Energie" },
-  { value: "trockenbau", label: "Trockenbau" },
+  { value: "hausbau", label: "Hausbau / Neubau" },
+  { value: "wohnungsbau", label: "Wohnungsbau / Umbau" },
+  { value: "haussanierung", label: "Haussanierung" },
+  { value: "wohnungssanierung", label: "Wohnungssanierung" },
+  { value: "gartengestaltung", label: "Gartengestaltung" },
+  { value: "innenausbau", label: "Innenausbau" },
+  { value: "dach_fassade", label: "Dach & Fassade" },
+  { value: "sanitaer_bad", label: "Sanitaer & Bad" },
+  { value: "heizung_energie", label: "Heizung & Energie" },
+  { value: "elektro", label: "Elektro & Smart Home" },
+  { value: "garage_carport", label: "Garage & Carport" },
+  { value: "keller", label: "Keller & Fundament" },
 ];
 
 const CARD_STYLES: Record<string, { bg: string; border: string }> = {
   "ueberblick": { bg: "bg-blue-50", border: "border-blue-200" },
+  "überblick": { bg: "bg-blue-50", border: "border-blue-200" },
   "materialliste": { bg: "bg-amber-50", border: "border-amber-200" },
   "geschaetzte kosten": { bg: "bg-green-50", border: "border-green-200" },
+  "geschätzte kosten": { bg: "bg-green-50", border: "border-green-200" },
   "schritt fuer schritt": { bg: "bg-slate-50", border: "border-slate-200" },
   "schritt für schritt": { bg: "bg-slate-50", border: "border-slate-200" },
   "profi-tipp": { bg: "bg-primary-50", border: "border-primary-200" },
@@ -67,12 +73,11 @@ function parseAdviceIntoSections(text: string): Section[] {
 
 export default function DemoWidget() {
   const [kategorie, setKategorie] = useState("");
-  const [flaeche, setFlaeche] = useState("");
   const [question, setQuestion] = useState("");
   const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [rateLimited, setRateLimited] = useState(false);
+  const [trialExpired, setTrialExpired] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,7 +91,6 @@ export default function DemoWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kategorie,
-          flaeche: flaeche ? parseFloat(flaeche) : undefined,
           question: question.trim() || undefined,
         }),
       });
@@ -94,8 +98,11 @@ export default function DemoWidget() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 429) setRateLimited(true);
-        setError(data.error ?? "Ein Fehler ist aufgetreten.");
+        if (data.error === "trial_expired") {
+          setTrialExpired(true);
+          return;
+        }
+        setError(data.message ?? data.error ?? "Ein Fehler ist aufgetreten.");
       } else {
         setAdvice(data.advice);
       }
@@ -107,65 +114,85 @@ export default function DemoWidget() {
   }
 
   const sections = advice ? parseAdviceIntoSections(advice) : [];
+  const isFormValid = kategorie && question.trim();
+
+  if (trialExpired) {
+    return (
+      <div className="bg-white rounded-2xl shadow-float border border-steel-200 overflow-hidden p-6 sm:p-8 text-center space-y-4">
+        <div className="w-14 h-14 rounded-xl bg-primary-50 flex items-center justify-center mx-auto">
+          <Wrench className="w-7 h-7 text-primary" />
+        </div>
+        <h2 className="text-xl font-bold text-text font-display">Hat dir die Beratung geholfen?</h2>
+        <p className="text-sm text-text-light leading-relaxed max-w-md mx-auto">
+          Du hast deine kostenlose Beratung erhalten. Waehle einen Plan fuer unbegrenzten Zugang zu Materiallisten, Kostenkalkulationen und Foto-Analysen.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link
+            href="/onboarding?plan=basic"
+            className="flex-1 text-center bg-white border-2 border-primary text-primary font-semibold py-3 rounded-xl hover:bg-primary-50 transition-colors text-sm"
+          >
+            Basic — 12,99 &euro;/Mo
+          </Link>
+          <Link
+            href="/onboarding?plan=pro"
+            className="flex-1 text-center bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-600 transition-colors text-sm shadow-sm"
+          >
+            Pro — 19,99 &euro;/Mo
+          </Link>
+          <Link
+            href="/onboarding?plan=baumeister"
+            className="flex-1 text-center bg-accent text-white font-semibold py-3 rounded-xl hover:bg-accent-600 transition-colors text-sm"
+          >
+            Baumeister — 29,99 &euro;/Mo
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-float border border-steel-200 overflow-hidden">
       {!advice ? (
-        <form onSubmit={handleSubmit} className="p-6 sm:p-7">
-          <div className="flex items-center gap-2 mb-5">
-            <Wrench className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-text">Kostenlose Bauberatung — sofort, ohne Anmeldung</span>
+        <form onSubmit={handleSubmit} className="p-5 sm:p-7">
+          <div className="mb-5">
+            <div className="flex items-center gap-2 mb-1.5">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-text">Jetzt kostenlos ausprobieren</span>
+            </div>
+            <p className="text-xs text-text-muted">Eine Beratung gratis — sofort, ohne Anmeldung.</p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3 mb-3">
-            <div>
-              <label htmlFor="kategorie" className="block text-xs font-medium text-text-light mb-1.5">
-                Was baust du?
-              </label>
-              <select
-                id="kategorie"
-                value={kategorie}
-                onChange={(e) => setKategorie(e.target.value)}
-                required
-                className="w-full border border-steel-200 rounded-xl px-4 py-3 text-text bg-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
-              >
-                <option value="">Kategorie waehlen ...</option>
-                {KATEGORIEN.map((k) => (
-                  <option key={k.value} value={k.value}>
-                    {k.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="flaeche" className="block text-xs font-medium text-text-light mb-1.5">
-                Flaeche in m² (optional)
-              </label>
-              <input
-                id="flaeche"
-                type="number"
-                min={1}
-                max={10000}
-                step="0.1"
-                value={flaeche}
-                onChange={(e) => setFlaeche(e.target.value)}
-                placeholder="z.B. 25"
-                className="w-full border border-steel-200 rounded-xl px-4 py-3 text-text bg-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
-              />
-            </div>
+          <div className="mb-3">
+            <label htmlFor="kategorie" className="block text-xs font-medium text-text-light mb-1.5">
+              Was planst du?
+            </label>
+            <select
+              id="kategorie"
+              value={kategorie}
+              onChange={(e) => setKategorie(e.target.value)}
+              required
+              className="w-full border border-steel-200 rounded-xl px-4 py-3 text-text bg-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors"
+            >
+              <option value="">Projekt waehlen ...</option>
+              {KATEGORIEN.map((k) => (
+                <option key={k.value} value={k.value}>
+                  {k.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="mb-3">
             <label htmlFor="question" className="block text-xs font-medium text-text-light mb-1.5">
-              Deine Frage (optional)
+              Deine Frage
             </label>
             <textarea
               id="question"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
+              required
               placeholder="z.B. Wie viele Ziegel brauche ich fuer eine Garage mit 25 m²? Was kostet das ungefaehr?"
-              rows={2}
+              rows={3}
               className="w-full border border-steel-200 rounded-xl px-4 py-3 text-text bg-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm transition-colors resize-none"
             />
           </div>
@@ -173,19 +200,12 @@ export default function DemoWidget() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 mb-3">
               {error}
-              {rateLimited && (
-                <div className="mt-1.5">
-                  <Link href="/onboarding" className="font-semibold underline">
-                    Jetzt kostenlos registrieren →
-                  </Link>
-                </div>
-              )}
             </div>
           )}
 
           <button
             type="submit"
-            disabled={loading || !kategorie}
+            disabled={loading || !isFormValid}
             className="w-full flex items-center justify-center gap-2 bg-primary text-white font-semibold py-3.5 rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-sm"
           >
             {loading ? (
@@ -230,28 +250,22 @@ export default function DemoWidget() {
 
           <div className="border-t border-steel-200 pt-4 space-y-3">
             <p className="text-xs text-text-muted">
-              Das war eine kostenlose Kurzberatung. Fuer unbegrenzte Nutzung, Foto-Analyse und Projekt-Speicherung:
+              Das war deine kostenlose Beratung. Fuer unbegrenzten Zugang:
             </p>
-            <Link
-              href="/onboarding"
-              className="flex items-center justify-center gap-2 w-full bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-600 transition-colors text-sm"
-            >
-              Kostenlos registrieren
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <button
-              onClick={() => {
-                setAdvice("");
-                setError("");
-                setKategorie("");
-                setFlaeche("");
-                setQuestion("");
-                setRateLimited(false);
-              }}
-              className="w-full text-center text-text-muted text-xs hover:text-text transition-colors py-1"
-            >
-              Neue Anfrage stellen
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Link
+                href="/onboarding?plan=basic"
+                className="flex-1 text-center bg-white border border-primary text-primary font-semibold py-2.5 rounded-xl hover:bg-primary-50 transition-colors text-sm"
+              >
+                Basic — 12,99 &euro;/Mo
+              </Link>
+              <Link
+                href="/onboarding?plan=pro"
+                className="flex-1 text-center bg-primary text-white font-semibold py-2.5 rounded-xl hover:bg-primary-600 transition-colors text-sm"
+              >
+                Pro — 19,99 &euro;/Mo
+              </Link>
+            </div>
           </div>
         </div>
       )}

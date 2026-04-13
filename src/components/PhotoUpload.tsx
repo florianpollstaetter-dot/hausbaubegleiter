@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, Camera, ArrowRight } from "lucide-react";
+import { Upload, X, Camera, ArrowRight, Wrench } from "lucide-react";
 import Link from "next/link";
 
 interface Section {
@@ -53,6 +53,7 @@ export default function PhotoUpload() {
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [trialExpired, setTrialExpired] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -88,7 +89,11 @@ export default function PhotoUpload() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Analyse fehlgeschlagen.");
+        if (data.error === "trial_expired") {
+          setTrialExpired(true);
+          return;
+        }
+        setError(data.message ?? data.error ?? "Analyse fehlgeschlagen.");
       } else {
         setAnalysis(data.analysis);
       }
@@ -100,6 +105,28 @@ export default function PhotoUpload() {
   }
 
   const sections = analysis ? parseSections(analysis) : [];
+
+  if (trialExpired) {
+    return (
+      <div className="bg-white rounded-2xl shadow-float border border-steel-200 overflow-hidden p-6 sm:p-8 text-center space-y-4">
+        <div className="w-14 h-14 rounded-xl bg-accent-50 flex items-center justify-center mx-auto">
+          <Camera className="w-7 h-7 text-accent" />
+        </div>
+        <h2 className="text-xl font-bold text-text font-display">Foto-Analyse hat geklappt?</h2>
+        <p className="text-sm text-text-light leading-relaxed max-w-md mx-auto">
+          Du hast deine kostenlose Foto-Analyse erhalten. Waehle einen Plan fuer unbegrenzte Analysen.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link href="/onboarding?plan=pro" className="flex-1 text-center bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-600 transition-colors text-sm shadow-sm">
+            Pro — 19,99 &euro;/Mo
+          </Link>
+          <Link href="/onboarding?plan=baumeister" className="flex-1 text-center bg-accent text-white font-semibold py-3 rounded-xl hover:bg-accent-600 transition-colors text-sm">
+            Baumeister — 29,99 &euro;/Mo
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-float border border-steel-200 overflow-hidden">
