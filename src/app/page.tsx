@@ -121,7 +121,7 @@ export default function HomePage() {
                   billing === "annual" ? "bg-white text-text shadow-sm" : "text-text-muted hover:text-text"
                 }`}
               >
-                Jaehrlich <span className="text-green-600 text-xs font-semibold">spare 17%</span>
+                Jaehrlich <span className="text-green-600 text-xs font-semibold">spare bis zu 17%</span>
               </button>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function HomePage() {
               </span>
               <div className="flex items-center gap-2 mb-1">
                 <Wrench className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold text-text">Pro</h3>
+                <h3 className="font-semibold text-text">Premium</h3>
               </div>
               <div className="mt-2 text-3xl font-bold text-text">
                 {billing === "monthly" ? "19,99" : "16,58"} &euro;
@@ -180,9 +180,9 @@ export default function HomePage() {
               <ul className="mt-5 space-y-2.5">
                 {[
                   "Alles aus Basic",
+                  "Erinnert sich an deine Fragen",
+                  "Kennt dich und dein Projekt",
                   "Foto-Analyse (unbegrenzt)",
-                  "Projekte speichern",
-                  "Materiallisten exportieren",
                   "Personalisierte Empfehlungen",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm text-text-light">
@@ -192,10 +192,10 @@ export default function HomePage() {
                 ))}
               </ul>
               <Link
-                href="/onboarding?plan=pro"
+                href="/onboarding?plan=premium"
                 className="mt-6 flex items-center justify-center gap-2 w-full bg-primary text-white font-semibold py-2.5 rounded-xl hover:bg-primary-600 transition-colors text-sm"
               >
-                Pro starten
+                Premium starten
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -207,19 +207,19 @@ export default function HomePage() {
                 <h3 className="font-semibold text-text">Baumeister</h3>
               </div>
               <div className="mt-2 text-3xl font-bold text-text">
-                {billing === "monthly" ? "29,99" : "24,92"} &euro;
+                {billing === "monthly" ? "59,99" : "49,92"} &euro;
                 <span className="text-base font-normal text-text-muted">/Mo</span>
               </div>
               {billing === "annual" && (
-                <p className="text-xs text-green-600 mt-1">299 &euro;/Jahr (statt 359,88 &euro;)</p>
+                <p className="text-xs text-green-600 mt-1">599 &euro;/Jahr (statt 719,88 &euro;)</p>
               )}
               <ul className="mt-5 space-y-2.5">
                 {[
-                  "Alles aus Pro",
-                  "Mehrere Projekte parallel",
-                  "Bild-Generierung (Designvorschlaege)",
+                  "Alles aus Premium",
+                  "Bis zu 5 Nutzer / Team",
+                  "Projekte gliedern & verwalten",
+                  "Personalisiert fuer jedes Teammitglied",
                   "Prioritaets-Support",
-                  "Fruehzugang zu neuen Features",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm text-text-light">
                     <CheckCircle className="w-4 h-4 text-accent flex-shrink-0" />

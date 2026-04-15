@@ -131,19 +131,19 @@ export default function DemoWidget() {
             href="/onboarding?plan=basic"
             className="flex-1 text-center bg-white border-2 border-primary text-primary font-semibold py-3 rounded-xl hover:bg-primary-50 transition-colors text-sm"
           >
-            Basic — 12,99 &euro;/Mo
+            Basic — 12,99 &euro;
           </Link>
           <Link
-            href="/onboarding?plan=pro"
+            href="/onboarding?plan=premium"
             className="flex-1 text-center bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-600 transition-colors text-sm shadow-sm"
           >
-            Pro — 19,99 &euro;/Mo
+            Premium — 19,99 &euro;
           </Link>
           <Link
             href="/onboarding?plan=baumeister"
             className="flex-1 text-center bg-accent text-white font-semibold py-3 rounded-xl hover:bg-accent-600 transition-colors text-sm"
           >
-            Baumeister — 29,99 &euro;/Mo
+            Baumeister — 59,99 &euro;
           </Link>
         </div>
       </div>
@@ -257,13 +257,13 @@ export default function DemoWidget() {
                 href="/onboarding?plan=basic"
                 className="flex-1 text-center bg-white border border-primary text-primary font-semibold py-2.5 rounded-xl hover:bg-primary-50 transition-colors text-sm"
               >
-                Basic — 12,99 &euro;/Mo
+                Basic — 12,99 &euro;
               </Link>
               <Link
-                href="/onboarding?plan=pro"
+                href="/onboarding?plan=premium"
                 className="flex-1 text-center bg-primary text-white font-semibold py-2.5 rounded-xl hover:bg-primary-600 transition-colors text-sm"
               >
-                Pro — 19,99 &euro;/Mo
+                Premium — 19,99 &euro;
               </Link>
             </div>
           </div>

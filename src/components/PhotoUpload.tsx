@@ -117,11 +117,11 @@ export default function PhotoUpload() {
           Du hast deine kostenlose Foto-Analyse erhalten. Waehle einen Plan fuer unbegrenzte Analysen.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <Link href="/onboarding?plan=pro" className="flex-1 text-center bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-600 transition-colors text-sm shadow-sm">
-            Pro — 19,99 &euro;/Mo
+          <Link href="/onboarding?plan=premium" className="flex-1 text-center bg-primary text-white font-semibold py-3 rounded-xl hover:bg-primary-600 transition-colors text-sm shadow-sm">
+            Premium — 19,99 &euro;
           </Link>
           <Link href="/onboarding?plan=baumeister" className="flex-1 text-center bg-accent text-white font-semibold py-3 rounded-xl hover:bg-accent-600 transition-colors text-sm">
-            Baumeister — 29,99 &euro;/Mo
+            Baumeister — 59,99 &euro;
           </Link>
         </div>
       </div>

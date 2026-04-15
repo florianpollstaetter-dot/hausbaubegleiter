@@ -27,14 +27,14 @@ export default function AGBPage() {
         <h3>Monatliche Plaene:</h3>
         <ul>
           <li><strong>Basic:</strong> 12,99 &euro;/Monat — unbegrenzte Bauberatungen, alle Kategorien, Materiallisten</li>
-          <li><strong>Pro:</strong> 19,99 &euro;/Monat — alles aus Basic plus unbegrenzte Foto-Analysen, Projektspeicherung, Materiallisten-Export</li>
-          <li><strong>Baumeister:</strong> 29,99 &euro;/Monat — alles aus Pro plus mehrere Projekte, Bild-Generierung, Prioritaets-Support</li>
+          <li><strong>Premium:</strong> 19,99 &euro;/Monat — alles aus Basic plus Erinnerung an bisherige Fragen, personalisierte Empfehlungen, unbegrenzte Foto-Analysen</li>
+          <li><strong>Baumeister:</strong> 59,99 &euro;/Monat — fuer Firmen, bis zu 5 Nutzer, Projektverwaltung, personalisiert pro Teammitglied, Prioritaets-Support</li>
         </ul>
-        <h3>Jahresplaene (17% Ersparnis):</h3>
+        <h3>Jahresplaene:</h3>
         <ul>
           <li><strong>Basic:</strong> 129 &euro;/Jahr</li>
-          <li><strong>Pro:</strong> 199 &euro;/Jahr</li>
-          <li><strong>Baumeister:</strong> 299 &euro;/Jahr</li>
+          <li><strong>Premium:</strong> 199 &euro;/Jahr</li>
+          <li><strong>Baumeister:</strong> 599 &euro;/Jahr</li>
         </ul>
 
         <h2>6. Registrierung</h2>

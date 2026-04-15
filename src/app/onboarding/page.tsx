@@ -25,7 +25,7 @@ export default function OnboardingPage() {
               <p className="text-xs text-green-600 mt-0.5">oder 129 &euro;/Jahr</p>
             </div>
             <ul className="mt-4 space-y-2">
-              {["Unbegrenzte Bauberatungen", "Alle 12 Kategorien", "Materiallisten & Kosten"].map((f) => (
+              {["Unbegrenzte Bauberatungen", "Alle 12 Kategorien", "Materiallisten & Kosten", "Jederzeit kuendbar"].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-xs text-text-light">
                   <CheckCircle className="w-3.5 h-3.5 text-steel-300 flex-shrink-0" />
                   {f}
@@ -40,21 +40,21 @@ export default function OnboardingPage() {
             </Link>
           </div>
 
-          {/* Pro */}
+          {/* Premium */}
           <div className="rounded-2xl border-2 border-primary p-6 bg-white relative shadow-card">
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full">
               EMPFOHLEN
             </span>
             <div className="flex items-center gap-2 mb-1">
               <Wrench className="w-4 h-4 text-primary" />
-              <h3 className="font-semibold text-text">Pro</h3>
+              <h3 className="font-semibold text-text">Premium</h3>
             </div>
             <div className="mt-2">
               <div className="text-2xl font-bold text-text">19,99 &euro;<span className="text-sm font-normal text-text-muted">/Mo</span></div>
               <p className="text-xs text-green-600 mt-0.5">oder 199 &euro;/Jahr</p>
             </div>
             <ul className="mt-4 space-y-2">
-              {["Alles aus Basic", "Foto-Analyse (unbegrenzt)", "Projekte speichern", "Materiallisten exportieren"].map((f) => (
+              {["Alles aus Basic", "Erinnert sich an deine Fragen", "Kennt dich und dein Projekt", "Foto-Analyse (unbegrenzt)", "Personalisierte Empfehlungen"].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-xs text-text-light">
                   <CheckCircle className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                   {f}
@@ -62,10 +62,10 @@ export default function OnboardingPage() {
               ))}
             </ul>
             <Link
-              href="/onboarding/registrierung?plan=pro"
+              href="/onboarding/registrierung?plan=premium"
               className="mt-5 flex items-center justify-center gap-2 w-full bg-primary text-white font-semibold py-2.5 rounded-xl hover:bg-primary-600 transition-colors text-sm"
             >
-              Pro waehlen
+              Premium waehlen
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -77,11 +77,12 @@ export default function OnboardingPage() {
               <h3 className="font-semibold text-text">Baumeister</h3>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold text-text">29,99 &euro;<span className="text-sm font-normal text-text-muted">/Mo</span></div>
-              <p className="text-xs text-green-600 mt-0.5">oder 299 &euro;/Jahr</p>
+              <div className="text-2xl font-bold text-text">59,99 &euro;<span className="text-sm font-normal text-text-muted">/Mo</span></div>
+              <p className="text-xs text-green-600 mt-0.5">oder 599 &euro;/Jahr</p>
             </div>
+            <p className="text-xs text-text-muted mt-2">Fuer Firmen und Teams</p>
             <ul className="mt-4 space-y-2">
-              {["Alles aus Pro", "Mehrere Projekte parallel", "Bild-Generierung", "Prioritaets-Support"].map((f) => (
+              {["Alles aus Premium", "Bis zu 5 Nutzer / Team", "Projekte gliedern & verwalten", "Personalisiert pro Mitglied", "Prioritaets-Support"].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-xs text-text-light">
                   <CheckCircle className="w-3.5 h-3.5 text-accent flex-shrink-0" />
                   {f}
