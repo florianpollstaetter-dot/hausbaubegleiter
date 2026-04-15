@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils/cn";
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/berater", label: "Berater", icon: Hammer },
-  { href: "/upload", label: "Foto", icon: Upload },
-  { href: "/profil", label: "Profil", icon: User },
+  { href: "/dashboard", label: "Dashboard", icon: Upload },
+  { href: "/einstellungen", label: "Profil", icon: User },
 ];
 
 export function MobileNav() {
